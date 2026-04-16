@@ -1,6 +1,6 @@
 # Tools Reference
 
-Complete reference for all 9 tools exposed by the nuph.ai MCP Server.
+Complete reference for all 38 tools exposed by the nuph.ai MCP Server.
 
 All tools are authenticated with your API key. Access is scoped to data in companies you own.
 

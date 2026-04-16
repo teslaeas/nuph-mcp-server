@@ -30,7 +30,7 @@ Claude.ai does **not** support custom Authorization headers on MCP connectors. U
      (Replace `YOUR_API_KEY` with your actual nuph.ai key, starts with `outreach_`.)
 6. Click **Save**
 
-The connector will show 9 tools available immediately. Try: *"What nuph.ai tools do you have?"*
+The connector will show 38 tools available immediately. Try: *"What nuph.ai tools do you have?"*
 
 **Supported query parameter names** (any of these works): `apiKey`, `apikey`, `api_key`, `key`, `token`.
 
@@ -186,7 +186,7 @@ npx -y mcp-remote https://api.nuph.ai/functions/v1/outreach-mcp --header "Author
 
 After setup, ask your AI:
 
-- *"What nuph.ai tools do you have?"* — Should list all 9 tools
+- *"What nuph.ai tools do you have?"* — Should list all 38 tools
 - *"List my companies"* — Should return your companies
 - *"What's my credit balance?"* — Should return balance and plan
 

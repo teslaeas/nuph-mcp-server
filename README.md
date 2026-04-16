@@ -51,7 +51,7 @@ Claude.ai does not support custom Authorization headers. Use the API key as a UR
    ```
    https://api.nuph.ai/functions/v1/outreach-mcp?apiKey=YOUR_API_KEY
    ```
-4. Save. The 9 tools appear immediately.
+4. Save. The 38 tools appear immediately.
 
 > The server accepts multiple query param names: `apiKey`, `apikey`, `api_key`, `key`, `token`.
 
@@ -128,27 +128,89 @@ Claude:
   ✓ Returns 10 prospects with score 8+, sorted by match quality
 ```
 
-## 9 Tools Available
+## 38 Tools Available
 
+Full platform coverage. You can create, read, update, delete everything **except** approve prospects and send messages (those require the dashboard + Chrome extension for user safety).
+
+### Companies
 | Tool | Description |
 |------|-------------|
-| `search_leads` | Search LinkedIn for new leads with advanced filters (seniority, function, company size, languages) |
-| `list_prospects` | List prospects with filtering by campaign, status, or score |
-| `get_prospect` | Get full prospect details including experience, skills, languages, and all generated messages |
-| `list_campaigns` | List campaigns with status and stats |
-| `get_campaign` | Get campaign details, ICP profile, and prospect stats |
-| `generate_message` | Preview or regenerate an AI message for a prospect (does NOT send) |
 | `list_companies` | List all companies you own |
-| `get_credits_balance` | Check credit balance and plan info |
-| `list_recent_activity` | Get recent activity log (approvals, messages, searches) |
+| `create_company` | Create a new company |
+| `update_company` | Edit company details |
+| `delete_company` | Delete company + all campaigns/prospects (destructive) |
+| `scrape_company_website` | Auto-extract company data from a website URL (costs credits) |
+| `generate_company_profile` | AI generates description, value prop, target audience (costs credits) |
 
-**Important — what this MCP server does NOT do:**
-- ❌ Cannot approve prospects (user must approve from dashboard after review)
-- ❌ Cannot send LinkedIn messages or connection requests (requires the official [Chrome Extension](https://chromewebstore.google.com/detail/nuphai-linkedin-outreach/ekcjniemnbdjjobajommjdnoimhdijel))
-- ❌ Cannot modify billing, plan, or account settings
-- ❌ Cannot delete prospects, campaigns, or companies
+### Campaigns
+| Tool | Description |
+|------|-------------|
+| `list_campaigns` | List campaigns |
+| `get_campaign` | Full campaign details + stats |
+| `create_campaign` | Create campaign |
+| `update_campaign` | Edit campaign |
+| `delete_campaign` | Delete campaign + prospects (destructive) |
+| `enhance_campaign` | AI improves description + suggests keywords (costs credits) |
+| `get_campaign_stats` | Exact prospect counts by status |
+| `get_company_stats` | Prospect counts across all campaigns in a company |
 
-The MCP is designed for **search, exploration, and message preview**. Actual outreach happens via the dashboard + Chrome extension for user safety.
+### ICP Profiles
+| Tool | Description |
+|------|-------------|
+| `list_icp_profiles` | List ICPs for a company |
+| `get_icp_profile` | Full ICP details |
+| `create_icp_profile` | Create targeting criteria |
+| `update_icp_profile` | Edit ICP |
+
+### Prospects
+| Tool | Description |
+|------|-------------|
+| `list_prospects` | List with filters (campaign, status, score) |
+| `get_prospect` | Full prospect details + messages + score breakdown |
+| `search_prospects` | Full-text search by name, title, company, email |
+| `update_prospect` | Edit notes, deal value, starred, status (non-extension statuses) |
+| `export_prospects` | Export all prospects as structured data |
+
+### Lead Search & Enrichment
+| Tool | Description |
+|------|-------------|
+| `search_leads` | Launch LinkedIn search with advanced filters (costs credits) |
+| `enrich_prospects` | Enrich specific prospects with full LinkedIn data (costs credits) |
+| `check_enrichment_status` | Check status of a search/enrichment job |
+
+### Messages
+| Tool | Description |
+|------|-------------|
+| `list_messages` | All generated messages for a prospect |
+| `generate_message` | Generate AI message for step 0–3 (costs credits; does NOT send) |
+| `update_message` | Edit message body |
+| `generate_chat_reply` | AI reply for ongoing LinkedIn chat (costs credits) |
+
+### LinkedIn Tools
+| Tool | Description |
+|------|-------------|
+| `audit_linkedin_profile` | Start audit of any public LinkedIn profile (costs credits) |
+| `check_linkedin_audit` | Poll audit status |
+
+### Analytics & Activity
+| Tool | Description |
+|------|-------------|
+| `get_dashboard_metrics` | Funnel metrics: total, approved, connected, replied, conversion rates |
+| `get_top_locations` | Geographic distribution of prospects |
+| `list_recent_activity` | Activity log (approvals, messages, searches) |
+
+### Credits & Config
+| Tool | Description |
+|------|-------------|
+| `get_credits_balance` | Current balance + plan |
+| `get_credit_transactions` | Detailed transaction history (by type) |
+| `list_writing_styles` | Available tones/modes/constraints for AI messages |
+| `get_user_settings` | User's default AI config |
+
+### What this MCP does NOT do (by design)
+- ❌ **Cannot approve prospects** — approval requires dashboard review
+- ❌ **Cannot send LinkedIn messages or connection requests** — requires the official [Chrome Extension](https://chromewebstore.google.com/detail/nuphai-linkedin-outreach/ekcjniemnbdjjobajommjdnoimhdijel) to prevent sending from the wrong LinkedIn account
+- ❌ **Cannot modify billing, plan, or purchase credits** — dashboard-only
 
 ## Example Prompts
 
@@ -206,7 +268,7 @@ See [docs/PROTOCOL.md](docs/PROTOCOL.md) for the full JSON-RPC reference.
 ## Documentation
 
 - [Setup Guide](docs/SETUP.md) — Detailed setup for each MCP client
-- [Tools Reference](docs/TOOLS.md) — All 9 tools with schemas
+- [Tools Reference](docs/TOOLS.md) — All 38 tools with schemas
 - [Protocol Reference](docs/PROTOCOL.md) — JSON-RPC 2.0 message format
 - [Example Prompts](docs/EXAMPLES.md) — 50+ tested prompts by use case
 - [Troubleshooting](docs/TROUBLESHOOTING.md) — Common issues and fixes
