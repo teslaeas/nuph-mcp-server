@@ -13,6 +13,29 @@ Complete setup instructions for connecting the nuph.ai MCP Server to your AI cli
 
 ---
 
+## Claude.ai (web chat at claude.ai)
+
+Claude.ai does **not** support custom Authorization headers on MCP connectors. Use the API key as a URL query parameter:
+
+1. Open [claude.ai](https://claude.ai)
+2. Click your profile picture → **Settings**
+3. Go to **Connectors** (or "Integrations")
+4. Click **Add custom connector**
+5. Fill in:
+   - **Name:** `nuph.ai`
+   - **URL:**
+     ```
+     https://api.nuph.ai/functions/v1/outreach-mcp?apiKey=YOUR_API_KEY
+     ```
+     (Replace `YOUR_API_KEY` with your actual nuph.ai key, starts with `outreach_`.)
+6. Click **Save**
+
+The connector will show 9 tools available immediately. Try: *"What nuph.ai tools do you have?"*
+
+**Supported query parameter names** (any of these works): `apiKey`, `apikey`, `api_key`, `key`, `token`.
+
+---
+
 ## Claude Desktop (macOS)
 
 1. Open Terminal

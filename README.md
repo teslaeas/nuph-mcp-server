@@ -41,6 +41,20 @@ Don't have a nuph.ai account? [Sign up free](https://nuph.ai) — 50 credits/mon
 
 ### 2. Connect your AI client
 
+#### Claude.ai (web — claude.ai)
+
+Claude.ai does not support custom Authorization headers. Use the API key as a URL query parameter:
+
+1. Open [claude.ai](https://claude.ai) → **Settings → Connectors → Add custom connector**
+2. **Name:** `nuph.ai`
+3. **URL** (replace `YOUR_API_KEY` with your actual key):
+   ```
+   https://api.nuph.ai/functions/v1/outreach-mcp?apiKey=YOUR_API_KEY
+   ```
+4. Save. The 9 tools appear immediately.
+
+> The server accepts multiple query param names: `apiKey`, `apikey`, `api_key`, `key`, `token`.
+
 #### Claude Desktop
 
 Edit `claude_desktop_config.json`:
