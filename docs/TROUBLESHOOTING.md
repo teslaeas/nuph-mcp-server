@@ -56,7 +56,7 @@ Common issues and fixes for the nuph.ai MCP Server.
 
 1. **Did you wait 1-3 minutes?** — Searches are asynchronous.
 2. **Check the campaign in the dashboard** — Results appear in the prospect list.
-3. **Might be 100% duplicates** — If leads are already in your pipeline, MongoDB dedup blocks re-scraping. Credits are refunded.
+3. **Might be 100% duplicates** — If leads are already in your pipeline, Postgres dedup blocks re-scraping. Credits are refunded.
 4. **Check your ICP filters** — Very narrow filters (e.g. very specific titles + locations) may return few results.
 
 ## "Credits deducted but no leads"
@@ -109,10 +109,57 @@ All searches cost a minimum of 1 credit (the search page fee) even if 0 new lead
 - `tools/call`
 - `ping`
 
-**Supported tool names:** (9 total)
-`list_companies`, `get_credits_balance`, `list_campaigns`, `get_campaign`, `list_prospects`, `get_prospect`, `search_leads`, `generate_message`, `list_recent_activity`
+**Supported tool names:** (47 total) — see [TOOLS.md](TOOLS.md) for the full reference. Quick check via `tools/list` or call `list_form_specs` from your AI client to see all write actions.
 
-Note: There is NO `approve_prospect` tool (intentional — approvals must be done from the dashboard).
+Some commonly confused names:
+- ✅ `query_prospects` (NEW preferred) — replaces the deprecated `list_prospects` / `search_prospects` / `export_prospects` (still callable as wrappers)
+- ✅ `find_pitchable_prospects` — intent tool for ranking prospects against a pitch
+- ✅ `get_workspace_overview` — first-call helper
+- ✅ `suggest_next_actions` — recommended-actions helper
+- ✅ `list_form_specs` / `get_form_spec` — auto-discovery of action requirements
+- ✅ `list_recent_jobs` / `cancel_job` — job monitoring
+- ❌ `approve_prospect` — does NOT exist (intentional — approvals must be done from the dashboard)
+- ❌ `send_message` / `send_connection` — do NOT exist (Chrome extension required)
+
+## "I expected a write but got a preview JSON instead"
+
+**Symptoms:** You called `create_campaign` (or any write tool) and got back a JSON object with `preview`, `missing_recommended`, `next_call` instead of an actual created row.
+
+**Cause:** Every write tool defaults to `dry_run: true`. The first call **never writes** — it returns a structured preview. To execute, your AI client must call again with `dry_run: false`. Most AI clients (Claude Desktop, Cursor) do this automatically as part of a conversational flow ("Looks good?" → confirm → execute).
+
+**If you're calling the MCP directly from a script and want to skip preview:** pass `"dry_run": false` in the arguments.
+
+## "ambiguous_company" error
+
+**Symptoms:** A tool returns a structured error with `code: "ambiguous_company"` and a `details.options` array.
+
+**Cause:** You own more than one company and didn't pass `company_id`. The MCP can't pick for you safely.
+
+**Fix:** Pass `company_id` explicitly. The error response includes the full `{id, name}` list — copy the right one.
+
+```jsonc
+{ "structured_error": {
+  "code": "ambiguous_company",
+  "details": { "options": [{"id":"abc","name":"Acme"}, {"id":"def","name":"Globex"}] },
+  "retry_with": { "field": "company_id", "from": "options[].id" }
+}}
+```
+
+## "rate_limited" error
+
+**Symptoms:** HTTP 429 with structured error `code: "rate_limited"` and `retry_after_seconds`.
+
+**Cause:** Per-API-key limit (default 60 calls/minute, 600/hour) exceeded.
+
+**Fix:** Wait `retry_after_seconds` seconds and retry. If you hit the limit regularly, raise it via `outreach_ai_config.mcp_max_calls_per_min` or use multiple API keys.
+
+## "missing_required" or "validation_failed" on a write
+
+**Symptoms:** A write tool with `dry_run: false` returns a structured error and refuses to execute.
+
+**Cause:** Your AI client tried to skip the preview without enough information. The DB has NOT NULL columns the model didn't fill, or a value failed validation.
+
+**Fix:** Call the tool **without** `dry_run: false` first to see the preview. The `missing_required` array tells you exactly what's missing. Get those values from the user, then retry with `dry_run: false`.
 
 ## Corporate firewall blocks the endpoint
 
@@ -124,7 +171,7 @@ Note: There is NO `approve_prospect` tool (intentional — approvals must be don
 
 Read the [Tools Reference](TOOLS.md) for what's intentionally not supported (approve, send, delete, billing).
 
-For legitimate feature requests, [open a discussion](https://github.com/nuph-ai/nuph-mcp-server/discussions).
+For legitimate feature requests, [open a discussion](https://github.com/teslaeas/nuph-mcp-server/discussions).
 
 ## Still stuck?
 

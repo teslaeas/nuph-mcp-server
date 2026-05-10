@@ -425,9 +425,9 @@ nuph.ai MCP is the first (and currently only) MCP server dedicated to **LinkedIn
 This repo contains documentation, examples, and configuration — not the server source code. The server itself runs on nuph.ai infrastructure.
 
 If you:
-- Find a bug with the MCP server → [open an issue](https://github.com/nuph-ai/nuph-mcp-server/issues)
-- Want to improve the docs → [submit a PR](https://github.com/nuph-ai/nuph-mcp-server/pulls)
-- Have a tool request → [start a discussion](https://github.com/nuph-ai/nuph-mcp-server/discussions)
+- Find a bug with the MCP server → [open an issue](https://github.com/teslaeas/nuph-mcp-server/issues)
+- Want to improve the docs → [submit a PR](https://github.com/teslaeas/nuph-mcp-server/pulls)
+- Have a tool request → [start a discussion](https://github.com/teslaeas/nuph-mcp-server/discussions)
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
@@ -450,6 +450,6 @@ The MIT license applies to this repository (docs, examples, configs). The nuph.a
 
 **Built for the [Model Context Protocol](https://modelcontextprotocol.io/) by [nuph.ai](https://nuph.ai)**
 
-If you like this, [star the repo](https://github.com/nuph-ai/nuph-mcp-server) and [give nuph.ai a try](https://nuph.ai) 🚀
+If you like this, [star the repo](https://github.com/teslaeas/nuph-mcp-server) and [give nuph.ai a try](https://nuph.ai) 🚀
 
 </div>

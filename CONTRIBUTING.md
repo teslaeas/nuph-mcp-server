@@ -20,7 +20,7 @@ This repository contains:
 
 ### 🐛 Report a bug
 
-Found an issue with the MCP server? [Open an issue](https://github.com/nuph-ai/nuph-mcp-server/issues/new).
+Found an issue with the MCP server? [Open an issue](https://github.com/teslaeas/nuph-mcp-server/issues/new).
 
 Include:
 - Your MCP client (Claude Desktop, Cursor, etc.) and version
@@ -41,7 +41,7 @@ Typos, clarifications, additional examples, better setup instructions — all we
 
 Want a new tool exposed through the MCP? Or a better prompt example?
 
-[Start a discussion](https://github.com/nuph-ai/nuph-mcp-server/discussions) — we read all of them.
+[Start a discussion](https://github.com/teslaeas/nuph-mcp-server/discussions) — we read all of them.
 
 Before requesting, check:
 - Is the action safe for an AI to do on the user's behalf? (e.g. we don't expose `approve_prospect` because users should review in the dashboard)

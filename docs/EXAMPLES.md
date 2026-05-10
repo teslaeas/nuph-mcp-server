@@ -226,4 +226,4 @@ Every write tool returns a preview first. The model surfaces missing fields and 
 
 ## Contributing examples
 
-Have a useful prompt? [Open a PR](https://github.com/nuph-ai/nuph-mcp-server/pulls) to add it here!
+Have a useful prompt? [Open a PR](https://github.com/teslaeas/nuph-mcp-server/pulls) to add it here!
