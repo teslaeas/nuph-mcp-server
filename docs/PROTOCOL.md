@@ -8,12 +8,13 @@ Most users don't need this — your MCP client handles the protocol automaticall
 
 | | |
 |---|---|
-| **Protocol** | [Model Context Protocol](https://modelcontextprotocol.io/) v2024-11-05 |
+| **Server version** | v2.1.0 |
+| **Protocol** | [Model Context Protocol](https://modelcontextprotocol.io/) v2025-06-18 |
 | **Transport** | Streamable HTTP |
 | **Format** | [JSON-RPC 2.0](https://www.jsonrpc.org/specification) |
 | **Endpoint** | `POST https://api.nuph.ai/functions/v1/outreach-mcp` |
 | **Content-Type** | `application/json` |
-| **Auth** | `Authorization: Bearer <api_key>` |
+| **Auth** | `Authorization: Bearer <api_key>` (or `?apikey=...` query param) |
 
 ## Request format
 
@@ -72,13 +73,13 @@ Initialize the MCP session. Client sends this first.
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "protocolVersion": "2024-11-05",
+    "protocolVersion": "2025-06-18",
     "capabilities": {
       "tools": {}
     },
     "serverInfo": {
       "name": "nuph.ai",
-      "version": "1.0.0"
+      "version": "2.1.0"
     }
   }
 }
@@ -113,7 +114,7 @@ Get the list of available tools.
         "description": "List all companies owned by the authenticated user",
         "inputSchema": { "type": "object", "properties": {}, "required": [] }
       },
-      // ... 8 more tools
+      // ... 46 more tools
     ]
   }
 }
@@ -232,10 +233,73 @@ Other origins are rejected. MCP clients don't need to worry about this (they're 
 
 ## Rate limiting
 
-Rate limits are based on your nuph.ai plan's credit balance:
-- `search_leads` and `generate_message` deduct credits on use
-- Read-only tools (list, get) have no credit cost but are rate-limited to ~100 req/min
-- When rate limited, the server returns HTTP 429 with a JSON-RPC error
+Per-API-key rate limit (independent of credit balance):
+- 60 calls/minute
+- 600 calls/hour
+
+Configurable per-account via `outreach_ai_config.mcp_max_calls_per_min` and `mcp_max_calls_per_hour`. When exceeded the server returns HTTP 429 with a `Retry-After` header AND a JSON-RPC error:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": null,
+  "error": {
+    "code": -32029,
+    "message": "Rate limit: 60 calls/minute exceeded. Retry in 60 seconds.",
+    "data": {
+      "code": "rate_limited",
+      "retry_after_seconds": 60
+    }
+  }
+}
+```
+
+Tools that cost credits (`search_leads`, `enrich_prospects`, `generate_message`, etc.) deduct on use. Read-only tools have no credit cost.
+
+## dry_run contract for write tools
+
+Every write tool defaults to `dry_run: true`. The first call returns a structured preview instead of executing:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "result": {
+    "content": [{
+      "type": "text",
+      "text": "{ \"preview\": {...}, \"missing_required\": [], \"missing_recommended\": [...], \"warnings\": [], \"estimated_credits\": null, \"preflight\": {...}, \"ready_to_execute\": true, \"next_call\": { \"tool\": \"create_campaign\", \"arguments\": {...}, \"with\": { \"dry_run\": false } } }"
+    }]
+  }
+}
+```
+
+Pass `dry_run: false` in the next call to actually write. The model can build the second call from the `next_call` template.
+
+Override globally via env: set `MCP_DRY_RUN_DEFAULT=false` on the function. Not recommended (defeats the safety pattern).
+
+## Structured errors
+
+Tool-specific errors return `result` with `isError: true` AND a `structured_error` object with stable error codes the model can branch on:
+
+```json
+{
+  "isError": true,
+  "content": [{ "type": "text", "text": "User owns multiple companies. Ask which one to use." }],
+  "structured_error": {
+    "code": "ambiguous_company",
+    "help": "User owns multiple companies. Ask which one to use, then call again with company_id.",
+    "details": {
+      "options": [
+        { "id": "abc-123", "name": "Acme" },
+        { "id": "def-456", "name": "Globex" }
+      ]
+    },
+    "retry_with": { "field": "company_id", "from": "options[].id" }
+  }
+}
+```
+
+Stable error codes: `unauthorized`, `not_found`, `no_company`, `ambiguous_company`, `ambiguous_campaign`, `missing_required`, `validation_failed`, `insufficient_credits`, `rate_limited`, `dry_run_required`, `state_changed`, `transitional_status_blocked`, `internal_error`.
 
 ## Timeouts
 
